@@ -27,7 +27,7 @@ assert (1..8).stream().gather(windowMultiple(3, 2, 1)).toList() ==
 assert (1..8).stream().gather(windowMultiple(3, -1)).toList() ==
     [[1, 2, 3], [4, 5, 6, 7, 8]]
 
-static <TR> Gatherer<TR, ?, List<TR>> windowMultiple(int... steps) {
+static <T> Gatherer<T, ?, List<T>> windowMultiple(int... steps) {
     var remaining = steps.toList()
     Gatherer.ofSequential(
         () -> [],

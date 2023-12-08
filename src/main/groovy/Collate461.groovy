@@ -33,7 +33,7 @@ assert (1..8).stream().gather(windowSlidingByStep(3, 4, false)).toList() ==
 assert (1..8).stream().gather(windowSlidingByStep(3, 3)).toList() ==
     [[1, 2, 3], [4, 5, 6], [7, 8]]
 
-static <TR> Gatherer<TR, ?, List<TR>> windowFixedTruncating(int windowSize) {
+static <T> Gatherer<T, ?, List<T>> windowFixedTruncating(int windowSize) {
     Gatherer.ofSequential(
         () -> [],
         Gatherer.Integrator.ofGreedy { window, element, downstream ->
@@ -46,7 +46,7 @@ static <TR> Gatherer<TR, ?, List<TR>> windowFixedTruncating(int windowSize) {
     )
 }
 
-static <TR> Gatherer<TR, ?, List<TR>> windowSlidingByStep(int windowSize, int stepSize, boolean keepRemaining = true) {
+static <T> Gatherer<T, ?, List<T>> windowSlidingByStep(int windowSize, int stepSize, boolean keepRemaining = true) {
     int skip = 0
     Gatherer.ofSequential(
         () -> [],
