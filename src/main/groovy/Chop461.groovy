@@ -33,7 +33,7 @@ static <TR> Gatherer<TR, ?, List<TR>> windowMultiple(int... steps) {
         () -> [],
         Gatherer.Integrator.ofGreedy { window, element, downstream ->
             if (!remaining) {
-                return true
+                return false
             }
             window << element
             if (remaining[0] != -1) remaining[0]--
