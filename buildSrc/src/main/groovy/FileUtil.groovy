@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-assert (1..8)[0..2] == [1, 2, 3]
-assert (1..8)[3<..<6] == [5, 6]
-assert (1..8)[0..2,3..4,5] == [1, 2, 3, 4, 5, 6]
-assert (1..8)[0..2,3..-1] == 1..8
-assert (1..8)[0,2,4,6] == [1,3,5,7]
-assert (1..8)[1,3,5,7] == [2,4,6,8]
-assert (1..8).take(3) == [1, 2, 3]
-assert (1..8).drop(2).take(3) == [3, 4, 5]
+class FileUtil {
+    private FileUtil() {}
 
-assert (1..8).stream().limit(3).toList() == [1, 2, 3]
-assert (1..8).stream().skip(2).limit(3).toList() == [3, 4, 5]
+    static List<String> baseNames(File subdir, List<String> exclusions = [], String ext = '.groovy') {
+        baseNames(subdir.listFiles().toList(), exclusions, [ext])
+    }
+
+    static List<String> baseNames(Collection<File> files, List<String> exclusions = [], List<String> exts = ['.groovy']) {
+        exts.collect { ext ->
+            files*.name
+                    .findAll { it.endsWith(ext) }
+                    .collect { it - ext }
+                    .findAll { !(it in exclusions) && !it.endsWith('Util') }
+        }.sum()
+    }
+}
