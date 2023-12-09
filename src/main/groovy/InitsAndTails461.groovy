@@ -49,3 +49,20 @@ static <T> Gatherer<T, ?, List<T>> initsOfTails() {
 }
 
 assert words.stream().gather(initsOfTails()).anyMatch { it == search }
+
+static <T> Gatherer<T, ?, List<T>> inits() {
+    Gatherer.ofSequential(
+        () -> [],
+        Gatherer.Integrator.ofGreedy { state, element, downstream ->
+            downstream.push(List.copyOf(state))
+            state << element
+            return true
+        },
+        (state, downstream) -> {
+            downstream.push(state)
+        }
+    )
+}
+
+assert search.stream().gather(inits()).toList() ==
+    [[], ['brown'], ['brown', 'fox']]

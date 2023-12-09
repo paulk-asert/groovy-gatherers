@@ -32,6 +32,6 @@ assert (1..6).tails() == [[1, 2, 3, 4, 5, 6],
 
 var words = 'the quick brown fox jumped over the lazy dog'.split().toList()
 var search = 'brown fox'.split().toList()
+assert Collections.indexOfSubList(words, search) != -1
 
 assert words.tails().any{ subseq -> subseq.inits().contains(search) }
-assert Collections.indexOfSubList(words, search) != -1
