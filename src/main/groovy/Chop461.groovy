@@ -27,7 +27,7 @@ static <T> Gatherer<T, ?, List<T>> windowMultiple(int... steps) {
     var remaining = steps.toList()
     Gatherer.ofSequential(
         () -> [],
-        Gatherer.Integrator.ofGreedy { window, element, downstream ->
+        Gatherer.Integrator.of { window, element, downstream ->
             if (!remaining) {
                 return false
             }

@@ -24,6 +24,8 @@ assert (1..8).stream().gather(windowFixedTruncating(3)).toList() ==
     [[1, 2, 3], [4, 5, 6]]
 assert (1..5).stream().gather(windowSliding(3)).toList() ==
     [[1, 2, 3], [2, 3, 4], [3, 4, 5]]
+assert (1..5).stream().gather(windowSlidingByStep(3, 1)).toList() ==
+    [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5], [5]]
 assert (1..8).stream().gather(windowSlidingByStep(3, 2)).toList() ==
     [[1, 2, 3], [3, 4, 5], [5, 6, 7], [7, 8]]
 assert (1..8).stream().gather(windowSlidingByStep(3, 2, false)).toList() ==
@@ -33,7 +35,7 @@ assert (1..8).stream().gather(windowSlidingByStep(3, 4, false)).toList() ==
 assert (1..8).stream().gather(windowSlidingByStep(3, 3)).toList() ==
     [[1, 2, 3], [4, 5, 6], [7, 8]]
 
-static <T> Gatherer<T, ?, List<T>> windowFixedTruncating(int windowSize) {
+<T> Gatherer<T, ?, List<T>> windowFixedTruncating(int windowSize) {
     Gatherer.ofSequential(
         () -> [],
         Gatherer.Integrator.ofGreedy { window, element, downstream ->
@@ -59,15 +61,16 @@ static <T> Gatherer<T, ?, List<T>> windowSlidingByStep(int windowSize, int stepS
             if (window.size() < windowSize) return true
             var result = List.copyOf(window)
             skip = stepSize > windowSize ? stepSize - windowSize : 0
-            [stepSize, windowSize].min().times {
-                window.removeAt(0)
-            }
+            [stepSize, windowSize].min().times {window.removeFirst() }
             downstream.push(result)
         },
         (window, downstream) -> {
             if (keepRemaining) {
-                var result = List.copyOf(window)
-                downstream.push(result)
+                while(window.size() > stepSize) {
+                    downstream.push(List.copyOf(window))
+                    stepSize.times{ window.removeFirst() }
+                }
+                downstream.push(List.copyOf(window))
             }
         }
     )

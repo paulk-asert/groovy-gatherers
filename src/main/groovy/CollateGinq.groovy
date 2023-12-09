@@ -28,9 +28,9 @@ assert GQL {
 
 assert GQL {
     from ns in (
-        from n in 1..5
+        from n in 1..8
         select n, (lead(n) over(orderby n)), (lead(n, 2) over(orderby n))
     )
+    limit 3
     select ns
 }*.toList() == [[1, 2, 3], [2, 3, 4], [3, 4, 5]]
-
