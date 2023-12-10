@@ -16,4 +16,7 @@
 
 import static java.util.stream.Gatherers.fold
 
-assert (1..5).stream().gather(fold(() -> '', (string, number) -> string + number)).findFirst().get() == '12345'
+assert (1..5).stream()
+             .gather(fold(() -> '', (string, number) -> string + number))
+             .findFirst()
+             .get() == '12345'
