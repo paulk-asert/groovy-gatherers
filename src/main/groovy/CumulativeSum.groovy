@@ -15,7 +15,7 @@
  */
 
 assert (1..5).inject([]) { acc, next ->
-    acc += acc ? acc.last() + next : next
+    acc + [acc ? acc.last() + next : next]
 //    [*acc, acc ? acc.last() + next : next] // alternative using spread operator
 } == [1, 3, 6, 10, 15]
 
