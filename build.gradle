@@ -19,7 +19,7 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.52.0'
 }
 
-version "0.1"
+version = "0.1"
 group = "groovy.blog"
 
 repositories {
@@ -32,21 +32,28 @@ dependencies {
     implementation("org.apache.groovy:groovy-ginq:4.0.26")
 }
 
+def runall = tasks.register('runAll') {
+    group = 'Application'
+}
+
 FileUtil.baseNames(sourceSets.main.allSource.files).each { name ->
-    tasks.register("run$name", JavaExec) {
+    def subtask = tasks.register("run$name", JavaExec) {
         dependsOn compileGroovy
-        group 'Application'
-        description "Run ${name}.groovy as a JVM application/Groovy script"
+        group = 'Application'
+        description = "Run ${name}.groovy as a JVM application/Groovy script"
         classpath = sourceSets.main.runtimeClasspath
         mainClass = name
         javaLauncher = javaToolchains.launcherFor {
-            languageVersion = JavaLanguageVersion.of(22)
+            languageVersion = JavaLanguageVersion.of(24)
         }
+    }
+    runall.configure {
+        dependsOn subtask
     }
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(22)
+        languageVersion = JavaLanguageVersion.of(24)
     }
 }
