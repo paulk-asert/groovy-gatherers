@@ -48,8 +48,10 @@ FileUtil.baseNames(sourceSets.main.allSource.files).each { name ->
             languageVersion = JavaLanguageVersion.of(jdkVersion)
         }
     }
-    runall.configure {
-        dependsOn subtask
+    if (!name.endsWith('Gatherer') || jdkVersion == '24') {
+        runall.configure {
+            dependsOn subtask
+        }
     }
 }
 
