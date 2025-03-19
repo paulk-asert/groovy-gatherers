@@ -24,6 +24,10 @@ permissions:
 
 jobs:
   execute:
+    strategy:
+      fail-fast: false
+      matrix:
+        jdk: [8, 17, 24]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -35,5 +39,5 @@ jobs:
           check-latest: true
       - uses: gradle/actions/setup-gradle@v4
       - name: Run scripts with Gradle
-        run: ./gradlew runAll
+        run: ./gradlew runAll -P${{matrix.jdk}}
         timeout-minutes: 60

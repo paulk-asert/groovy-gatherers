@@ -32,6 +32,7 @@ dependencies {
     implementation("org.apache.groovy:groovy-ginq:4.0.26")
 }
 
+def jdkVersion = providers.gradleProperty('jdkVersion').get()
 def runall = tasks.register('runAll') {
     group = 'Application'
 }
@@ -44,16 +45,28 @@ FileUtil.baseNames(sourceSets.main.allSource.files).each { name ->
         classpath = sourceSets.main.runtimeClasspath
         mainClass = name
         javaLauncher = javaToolchains.launcherFor {
-            languageVersion = JavaLanguageVersion.of(24)
+            languageVersion = JavaLanguageVersion.of(jdkVersion)
         }
     }
-    runall.configure {
-        dependsOn subtask
+    if (!name.endsWith('Gatherer') || jdkVersion == '24') {
+        runall.configure {
+            dependsOn subtask
+        }
     }
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(24)
+        languageVersion = JavaLanguageVersion.of(jdkVersion)
+    }
+}
+
+sourceSets {
+    main {
+        groovy {
+            if (jdkVersion != '24') {
+                exclude '**/*Gatherer.groovy'
+            }
+        }
     }
 }
