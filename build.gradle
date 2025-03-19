@@ -29,7 +29,7 @@ repositories {
 dependencies {
     implementation("org.apache.groovy:groovy:4.0.16")
     implementation("org.apache.groovy:groovy-macro:4.0.26")
-    implementation("org.apache.groovy:groovy-ginq:4.0.16")
+    implementation("org.apache.groovy:groovy-ginq:4.0.26")
 }
 
 FileUtil.baseNames(sourceSets.main.allSource.files).each { name ->
