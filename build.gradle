@@ -15,25 +15,29 @@
  */
 
 plugins {
-    id "groovy"
+    id 'groovy'
     id 'com.github.ben-manes.versions' version '0.52.0'
     id 'org.nosphere.apache.rat' version '0.8.1'
 }
 
-version = "0.1"
-group = "groovy.blog"
+version = '0.1'
+group = 'groovy.blog'
+def groovyVersion = '5.0.0-alpha-12'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("org.apache.groovy:groovy:4.0.26")
-    implementation("org.apache.groovy:groovy-macro:4.0.26")
-    implementation("org.apache.groovy:groovy-ginq:4.0.26")
+    implementation "org.apache.groovy:groovy:$groovyVersion"
+    implementation "org.apache.groovy:groovy-macro:$groovyVersion"
+    implementation "org.apache.groovy:groovy-ginq:$groovyVersion"
+    implementation 'com.ginsberg:gatherers4j:0.10.0'
+//    implementation files('/Users/paulk/working/gatherers4j/build/libs/gatherers4j-0.10.96.jar')
+    implementation 'com.bloidonia:groovy-stream:0.9.0'
 }
 
-def jdkVersion = providers.gradleProperty('jdkVersion').getOrElse('17')
+def jdkVersion = providers.gradleProperty('jdkVersion').getOrElse('24')
 
 def runall = tasks.register('runAll') {
     group = 'Application'
@@ -50,7 +54,7 @@ FileUtil.baseNames(sourceSets.main.allSource.files).each { name ->
             languageVersion = JavaLanguageVersion.of(jdkVersion)
         }
     }
-    if (!name.endsWith('Gatherer') || jdkVersion == '24') {
+    if (!name.contains('Gatherer') || jdkVersion == '24') {
         runall.configure {
             dependsOn subtask
         }
