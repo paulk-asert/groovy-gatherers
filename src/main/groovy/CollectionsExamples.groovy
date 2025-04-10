@@ -1,6 +1,18 @@
-import com.ginsberg.gatherers4j.Gatherers4j
-
-import java.util.stream.Stream
+/*
+ * SPDX-License-Identifier: Apache-2.0
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 var abc = 'A'..'C'
 var nums = 1..3
@@ -52,14 +64,8 @@ assert abc.iterator().withIndex().tapEvery { tuple ->
 // repeat
 assert abc * 3 == ['A', 'B', 'C', 'A', 'B', 'C', 'A', 'B', 'C']
 
-// repeatInfinitely => X // vanilla streams
-int idx = abc.size()
-assert Stream.generate {
-    idx %= abc.size()
-    abc[idx++]
-}
-.limit(5)
-.toList() == ['A', 'B', 'C', 'A', 'B']
+// repeatInfinitely
+assert [a, b, c].repeat().take(5).toList() == ['A', 'B', 'C', 'A', 'B']
 
 // reverse
 assert abc.iterator()
@@ -180,21 +186,3 @@ assert abcde.stream().limit(4).toList() == ['A', 'B', 'C', 'D']
 // drop/skip
 assert abcde.drop(1) == ['B', 'C', 'D', 'E']
 assert abcde.stream().skip(1).toList() == ['B', 'C', 'D', 'E']
-
-/*
-import java.util.stream.Stream
-import java.util.stream.Gatherers
-
-//var nums = 1..3
-assert nums.inject(''){ carry, next -> carry + next } == '123'
-//assert nums.injectMany(''){ carry, next -> carry + next } == ['1', '12', '123']
-assert nums.inject([]) { sum, next ->
-    [*sum, "${sum.takeRight(1)[0] ?: ''}$next"]
-} == ['1', '12', '123']
-
-assert Stream.of(*nums).reduce('', (String string, number) -> string + number)
-    == '123'
-assert Stream.of(*nums)
-    .gather(Gatherers.scan(() -> '', (string, number) -> string + number))
-    .toList() == ['1', '12', '123']
-*/
