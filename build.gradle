@@ -22,10 +22,12 @@ plugins {
 
 version = '0.1'
 group = 'groovy.blog'
-def groovyVersion = '5.0.0-alpha-12'
+//def groovyVersion = '5.0.0-alpha-12'
+def groovyVersion = '5.0.0-SNAPSHOT'
 
 repositories {
     mavenCentral()
+    maven{url = 'https://repository.apache.org/content/repositories/snapshots/' }
 }
 
 dependencies {

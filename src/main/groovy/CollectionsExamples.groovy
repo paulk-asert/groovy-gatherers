@@ -54,18 +54,24 @@ assert letters
     .toString() == '[B:4, A:3, C:2]'
 
 // peekIndexed
+// Eager
 assert abc.eachWithIndex { String entry, int i ->
     println "Element $entry at index $i"
 } == abc
+
+assert !abc.iterator().eachWithIndex { String entry, int i ->
+    println "Element $entry at index $i"
+}.hasNext()
+
 assert abc.iterator().withIndex().tapEvery { tuple ->
     println "Element $tuple.first at index $tuple.last"
-}*.first() == abc
+}*.first == abc
 
 // repeat
 assert abc * 3 == ['A', 'B', 'C', 'A', 'B', 'C', 'A', 'B', 'C']
 
 // repeatInfinitely
-assert [a, b, c].repeat().take(5).toList() == ['A', 'B', 'C', 'A', 'B']
+assert abc.repeat().take(5).toList() == ['A', 'B', 'C', 'A', 'B']
 
 // reverse
 assert abc.iterator()
@@ -73,7 +79,7 @@ assert abc.iterator()
     .toList() == 'C'..'A'
 
 // rotate
-var abcde = 'A'..'E'
+var abcde = ['A', 'B', 'C', 'D', 'E']
 var temp = abcde.clone()
 var shift = 2
 Collections.rotate(temp, -shift) // -ve for left
@@ -91,16 +97,22 @@ assert abc.withIndex().inject([]) { sum, next ->
 } == [ 'A0', 'A0B1', 'A0B1C2' ]
 
 // shuffle
-assert ('A'..'G').shuffled(new Random(42))
+int seed = 42
+assert ('A'..'G').shuffled(new Random(seed))
     == ['C', 'G', 'E', 'A', 'F', 'D', 'B']
 
 // throttle X
 
 // withIndex
+/* Waiting on GROOVY-11606
 assert abc.iterator().withIndex()
     .collectLazy(tuple -> "$tuple.v1$tuple.v2")
     .toList() == ['A0', 'B1', 'C2']
-assert abc.iterator().indexed().toString() == '[0:A, 1:B, 2:C]'
+*/
+assert abc.iterator().withIndex()
+    .collect(tuple -> "$tuple.v1$tuple.v2") == ['A0', 'B1', 'C2'] // Eager
+
+assert abc.iterator().indexed().collectEntries() == [0:'A', 1:'B', 2:'C']
 
 // zipWith
 assert [abc, nums].transpose().collect{ s, n -> s + n }
@@ -119,24 +131,39 @@ assert ['A', 'BB', 'CC', 'D'].iterator()
 // dropEveryNth/takeEveryNth
 
 // drop every 3rd
+/* Waiting on GROOVY-11606
 assert ('A'..'G').iterator().withIndex()
-    .findAllLazy { mext, i -> i % 3 }
+    .findAllLazy { next, i -> i % 3 }
     .toList()*.first == ['B', 'C', 'E', 'F']
-
-// take every 3rd
+*/
 assert ('A'..'G').iterator().withIndex()
-    .findAllLazy { mext, i -> i % 3 == 0 }
+    .findAll { next, i -> i % 3 } // Eager
+    *.first == ['B', 'C', 'E', 'F']
+// take every 3rd
+/* Waiting on GROOVY-11606
+assert ('A'..'G').iterator().withIndex()
+    .findAllLazy { next, i -> i % 3 == 0 }
     .toList()*.first == ['A', 'D', 'G']
+*/
+assert ('A'..'G').iterator().withIndex()
+    .findAll { next, i -> i % 3 == 0 } // Eager
+    *.first == ['A', 'D', 'G']
 
 // dropLast/dropRight
 assert abcde.dropRight(2) == abc
 
 // filterIndexed
 assert abcde[0, 2, 4] == ['A', 'C', 'E']
+/* Waiting on GROOVY-11606
 assert abcde.iterator().withIndex()
     .findAllLazy { s, n -> n % 2 == 0 }*.first == ['A', 'C', 'E']
 assert abcde.iterator().withIndex()
     .findAllLazy { s, n -> n < 2 || s == 'E' }*.first == ['A', 'B', 'E']
+*/
+assert abcde.iterator().withIndex()
+    .findAll { s, n -> n % 2 == 0 }*.first == ['A', 'C', 'E'] // Eager
+assert abcde.iterator().withIndex()
+    .findAll { s, n -> n < 2 || s == 'E' }*.first == ['A', 'B', 'E'] // Eager
 
 // filterInstanceOf
 var mixed = [(byte)1, (short)2, 3, (long)4, 5.0, 6.0d, '7', '42']
@@ -151,7 +178,7 @@ assert mixed.findAll{ it.getClass() in [Integer, Short] } == [2, 3]
 // samplePercentage X
 
 // takeRight
-assert abcde.takeRight(3) == abc
+assert abcde.takeRight(3) == 'C'..'E'
 
 // takeUntil/takeWhile X
 assert abcde.iterator()

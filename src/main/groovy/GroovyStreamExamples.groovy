@@ -20,8 +20,9 @@ var abc = 'A'..'C'
 var nums = 1..3
 
 // crossWith
-assert Stream.from(x:abc, y:nums).map{ x + y }.collect().toString()
-    == '[A1, A2, A3, B1, B2, B3, C1, C2, C3]'
+assert Stream.from(x:abc, y:nums)
+    .map{ x + y }
+    .toList() == ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
 
 // foldIndexed => X
 
