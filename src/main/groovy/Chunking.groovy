@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-assert (1..8)[0..2] == [1, 2, 3]
-assert (1..8)[3<..<6] == [5, 6]
-assert (1..8)[0..2,3..4,5] == [1, 2, 3, 4, 5, 6]
-assert (1..8)[0..2,3..-1] == 1..8
-assert (1..8)[0,2,4,6] == [1,3,5,7]
-assert (1..8)[1,3,5,7] == [2,4,6,8]
-assert (1..8).take(3) == [1, 2, 3]
-assert (1..8).drop(2).take(3) == [3, 4, 5]
+var nums = 1..8
+assert nums[0..2] == [1, 2, 3]
+assert nums[3<..<6] == [5, 6]
+assert nums[0..2,3..4,5] == [1, 2, 3, 4, 5, 6]
+assert nums[0..2] + nums[3..-1] == 1..8
+assert nums[0,2,4,6] == [1,3,5,7]
+assert nums[1,3,5,7] == [2,4,6,8]
+assert nums.take(3) == [1, 2, 3]
+assert nums.drop(2).take(3) == [3, 4, 5]
 
-assert (1..8).stream().limit(3).toList() == [1, 2, 3]
-assert (1..8).stream().skip(2).limit(3).toList() == [3, 4, 5]
+assert nums.stream().limit(3).toList() == [1, 2, 3]
+assert nums.stream().skip(2).limit(3).toList() == [3, 4, 5]
