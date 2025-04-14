@@ -36,7 +36,7 @@ dependencies {
     implementation "org.apache.groovy:groovy-ginq:$groovyVersion"
     implementation 'com.ginsberg:gatherers4j:0.10.0'
 //    implementation files('/Users/paulk/working/gatherers4j/build/libs/gatherers4j-0.10.96.jar')
-    implementation 'com.bloidonia:groovy-stream:0.9.0'
+    implementation 'com.bloidonia:groovy-stream:0.9.1'
 }
 
 def jdkVersion = providers.gradleProperty('jdkVersion').getOrElse('24')
