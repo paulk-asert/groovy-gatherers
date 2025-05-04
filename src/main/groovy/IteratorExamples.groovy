@@ -24,6 +24,9 @@ assert [abc, nums].combinations()
 assert [nums, abc].combinations()
     .collect(list -> list.last + list.first)
     .toString() == '[A1, A2, A3, B1, B2, B3, C1, C2, C3]'
+assert Iterators.combine(letter: abc.iterator(), number: nums.iterator())
+    .collecting(map -> map.letter + map.number)
+    .toList() == ['A1', 'A2', 'A3', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3']
 
 // foldIndexed => inject + indexed/withIndex
 assert abc.withIndex().inject('') { carry, next ->
@@ -39,7 +42,8 @@ assert abc.indices.collectMany{ [abc[it], nums[it]] } == ['A', 1, 'B', 2, 'C', 3
 assert abc.zip(nums).sum([]) == ['A', 1, 'B', 2, 'C', 3]
 
 // mapIndexed => collect + indexed/withIndex
-assert abc.withIndex().collect {  s, i -> s + i } == ['A0', 'B1', 'C2']
+assert abc.iterator().withIndex().collect { s, i -> s + i } == ['A0', 'B1', 'C2']
+assert abc.iterator().withIndex().collecting { s, i -> s + i }.toList() == ['A0', 'B1', 'C2']
 
 var letters = ['A', 'A', 'A', 'B', 'B', 'B', 'B', 'C', 'C']
 
@@ -104,11 +108,9 @@ assert ('A'..'G').shuffled(new Random(seed))
 // throttle X
 
 // withIndex
-/* Waiting on GROOVY-11606
 assert abc.iterator().withIndex()
-    .collectLazy(tuple -> "$tuple.v1$tuple.v2")
-    .toList() == ['A0', 'B1', 'C2']
-*/
+    .collect { s, i -> s + i } == ['A0', 'B1', 'C2']
+
 assert abc.iterator().withIndex()
     .collect(tuple -> "$tuple.v1$tuple.v2") == ['A0', 'B1', 'C2'] // Eager
 
@@ -117,6 +119,9 @@ assert abc.iterator().indexed().collectEntries() == [0:'A', 1:'B', 2:'C']
 // zipWith
 assert [abc, nums].transpose().collect{ s, n -> s + n }
     == ['A1', 'B2', 'C3']
+assert abc.iterator()
+    .zip(nums.iterator())
+    .collect { s, n -> s + n } == ['A1', 'B2', 'C3']
 
 // zipWithNext X
 
@@ -154,12 +159,11 @@ assert abcde.dropRight(2) == abc
 
 // filterIndexed
 assert abcde[0, 2, 4] == ['A', 'C', 'E']
-/* Waiting on GROOVY-11606
 assert abcde.iterator().withIndex()
-    .findAllLazy { s, n -> n % 2 == 0 }*.first == ['A', 'C', 'E']
+    .findingAll { s, n -> n % 2 == 0 }*.first == ['A', 'C', 'E']
 assert abcde.iterator().withIndex()
-    .findAllLazy { s, n -> n < 2 || s == 'E' }*.first == ['A', 'B', 'E']
-*/
+    .findingAll { s, n -> n < 2 || s == 'E' }*.first == ['A', 'B', 'E']
+
 assert abcde.iterator().withIndex()
     .findAll { s, n -> n % 2 == 0 }*.first == ['A', 'C', 'E'] // Eager
 assert abcde.iterator().withIndex()

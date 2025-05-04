@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+
+import com.ginsberg.gatherers4j.enums.Order
 import com.ginsberg.gatherers4j.enums.Rotate
 
 import java.util.function.Function
@@ -22,6 +24,8 @@ import java.util.stream.Gatherers
 import java.util.stream.Stream
 import com.ginsberg.gatherers4j.Gatherers4j
 import com.ginsberg.gatherers4j.enums.Frequency
+
+import static java.lang.String.CASE_INSENSITIVE_ORDER
 
 var abc = 'A'..'C'
 var nums = 1..3
@@ -265,3 +269,29 @@ assert Stream.iterate(0, n -> n + 1)
 //    .collate(3)
 //    .take(3)
 //    .toList() == [[0, 1, 2], [3, 4, 5], [6, 7, 8]]
+
+def items = ['a', 'a', 'a', 'a', 'b', 'c', 'c', 'a', 'a', 'd', 'e', 'e', 'e', 'e', 'E']
+
+// name variants: compress/dedupe/dedupeConsecutive/dedupeAdjacent
+// see also: https://aperiodic.net/pip/scala/s-99/#p08
+// gatherer4j variants:
+assert items.stream().gather(Gatherers4j.dedupeConsecutive()).toList() == ['a', 'b', 'c', 'a', 'd', 'e', 'E']
+assert items.stream().gather(Gatherers4j.dedupeConsecutiveBy(String::toLowerCase)).toList() == ['a', 'b', 'c', 'a', 'd', 'e']
+// potential Groovy DGM method
+//assert items.dedupe() == ['a', 'b', 'c', 'a', 'd', 'e', 'E']
+
+// name variants: pack/adjacent/group/chop/run/chopAdjacent/chopRun
+// see also: https://aperiodic.net/pip/scala/s-99/#p09
+// gatherer4j variants:
+assert items.stream().gather(Gatherers4j.group()).toList() ==
+    [['a', 'a', 'a', 'a'], ['b'], ['c', 'c'], ['a', 'a'], ['d'], ['e', 'e', 'e', 'e'], ['E']]
+assert items.stream().gather(Gatherers4j.groupBy(String::toLowerCase)).toList()
+  == [['a', 'a', 'a', 'a'], ['b'], ['c', 'c'], ['a', 'a'], ['d'], ['e', 'e', 'e', 'e', 'E']]
+assert items.stream().gather(Gatherers4j.groupOrdered(Order.Equal)).toList() ==
+    [['a', 'a', 'a', 'a'], ['b'], ['c', 'c'], ['a', 'a'], ['d'], ['e', 'e', 'e', 'e'], ['E']]
+assert items.stream().gather(Gatherers4j.groupOrdered(Order.AscendingOrEqual)).toList() ==
+    [['a', 'a', 'a', 'a', 'b', 'c', 'c'], ['a', 'a', 'd', 'e', 'e', 'e', 'e'], ['E']]
+assert items.stream().gather(Gatherers4j.groupOrderedBy(Order.AscendingOrEqual, CASE_INSENSITIVE_ORDER)).toList() ==
+    [['a', 'a', 'a', 'a', 'b', 'c', 'c'], ['a', 'a', 'd', 'e', 'e', 'e', 'e', 'E']]
+// potential Groovy DGM method:
+//assert items.chop() == [['a', 'a', 'a', 'a'], ['b'], ['c', 'c'], ['a', 'a'], ['d'], ['e', 'e', 'e', 'e'], ['E']]
