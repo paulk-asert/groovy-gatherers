@@ -30,7 +30,7 @@ jobs:
         jdk: [8, 17, 24]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
