@@ -33,18 +33,32 @@ repositories {
     maven{url = 'https://repository.apache.org/content/repositories/snapshots/' }
 }
 
+def jdkVersion = providers.gradleProperty('jdkVersion').getOrElse('25')
+
+// Groovy 6 needs JDK 17, but some examples need a newer one; each is compiled and run only
+// where its APIs exist, so the same build works across the CI matrix.
+def jdk = jdkVersion as int
+def jdkFloor = { String name ->
+    if (name.startsWith('Gatherers4j')) return 25      // gatherers4j 0.14.0 declares a JVM 25 floor
+    if (name.endsWith('Gatherer')) return 24           // java.util.stream.Gatherer is final in JDK 24
+    if (name == 'IteratorExamples') return 21          // list.first / *.last are SequencedCollection getters
+    17
+}
+def runnable = { String name -> jdk >= jdkFloor(name) }
+
 dependencies {
     implementation "org.apache.groovy:groovy:$groovyVersion"
     implementation "org.apache.groovy:groovy-macro:$groovyVersion"
     implementation "org.apache.groovy:groovy-ginq:$groovyVersion"
     implementation "org.apache.groovy:groovy-nio:$groovyVersion"
-    implementation 'com.ginsberg:gatherers4j:0.11.0'
+    if (runnable('Gatherers4jExamples')) {
+        implementation 'com.ginsberg:gatherers4j:0.14.0'
+    }
     implementation('com.bloidonia:groovy-stream:0.9.1') {
         exclude group: 'org.codehaus.groovy' // built against Groovy 2.3; Groovy 6 supplies the runtime
     }
 }
 
-def jdkVersion = providers.gradleProperty('jdkVersion').getOrElse('25')
 
 def runall = tasks.register('runAll') {
     group = 'Application'
@@ -61,7 +75,7 @@ FileUtil.baseNames(sourceSets.main.allSource.files).each { name ->
             languageVersion = JavaLanguageVersion.of(jdkVersion)
         }
     }
-    if (!name.contains('Gatherer') || (jdkVersion as int) >= 24) {
+    if (runnable(name)) {
         runall.configure {
             dependsOn subtask
         }
@@ -77,8 +91,9 @@ java {
 sourceSets {
     main {
         groovy {
-            if ((jdkVersion as int) < 24) {
-                exclude '**/*Gatherer.groovy'
+            exclude { element ->
+                def name = element.file.name
+                name.endsWith('.groovy') && !runnable(name - '.groovy')
             }
         }
     }

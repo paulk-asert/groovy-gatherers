@@ -20,6 +20,17 @@ limitations under the License.
 Examples for:
 https://groovy.apache.org/blog/groovy-gatherers
 
+## JDK requirements
+
+Groovy 6 needs JDK 17, but individual examples need newer APIs, so each is compiled and run
+only where it can work (`jdkFloor` in `build.gradle`, and the CI matrix is 17, 21 and 25):
+
+| example | needs | why |
+| --- | --- | --- |
+| `IteratorExamples` | 21 | `list.first` / `*.last` resolve to `SequencedCollection` getters |
+| `*Gatherer` | 24 | `java.util.stream.Gatherer` is final in JDK 24 |
+| `Gatherers4jExamples` | 25 | gatherers4j 0.14.0 declares a JVM 25 floor |
+
 ## Native images (GraalVM)
 
 `native-build.sh` builds every example script into its own GraalVM native image and runs it,

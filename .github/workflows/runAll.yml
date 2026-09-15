@@ -27,7 +27,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jdk: [8, 17, 24]
+        jdk: [17, 21, 25]   # Groovy 6 requires 17+; the Gatherer examples need 24+, gatherers4j 25+
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

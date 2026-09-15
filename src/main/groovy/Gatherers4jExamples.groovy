@@ -233,7 +233,7 @@ assert ('A'..'G').stream()
     .toList() == [['A', 'B', 'C'], ['C', 'D', 'E'], ['E', 'F', 'G'], ['G']]
 
 assert (1..5).stream().gather(Gatherers4j.window(3, 1, true)).toList() ==
-    [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5]]
+    [[1, 2, 3], [2, 3, 4], [3, 4, 5], [4, 5], [5]]
 assert (1..8).stream().gather(Gatherers4j.window(3, 2, true)).toList() ==
     [[1, 2, 3], [3, 4, 5], [5, 6, 7], [7, 8]]
 assert (1..8).stream().gather(Gatherers4j.window(3, 2, false)).toList() ==
