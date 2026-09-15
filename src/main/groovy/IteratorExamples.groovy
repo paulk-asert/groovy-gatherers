@@ -140,20 +140,16 @@ assert ['A', 'BB', 'CC', 'D'].iterator()
 // dropEveryNth/takeEveryNth
 
 // drop every 3rd
-/* Waiting on GROOVY-11606
 assert ('A'..'G').iterator().withIndex()
-    .findAllLazy { next, i -> i % 3 }
-    .toList()*.first == ['B', 'C', 'E', 'F']
-*/
+    .findingAll { next, i -> i % 3 }
+    *.first == ['B', 'C', 'E', 'F']
 assert ('A'..'G').iterator().withIndex()
     .findAll { next, i -> i % 3 } // Eager
     *.first == ['B', 'C', 'E', 'F']
 // take every 3rd
-/* Waiting on GROOVY-11606
 assert ('A'..'G').iterator().withIndex()
-    .findAllLazy { next, i -> i % 3 == 0 }
-    .toList()*.first == ['A', 'D', 'G']
-*/
+    .findingAll { next, i -> i % 3 == 0 }
+    *.first == ['A', 'D', 'G']
 assert ('A'..'G').iterator().withIndex()
     .findAll { next, i -> i % 3 == 0 } // Eager
     *.first == ['A', 'D', 'G']
