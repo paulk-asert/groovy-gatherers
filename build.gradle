@@ -23,9 +23,12 @@ plugins {
 version = '0.1'
 group = 'groovy.blog'
 //def groovyVersion = '5.0.0-alpha-12'
-def groovyVersion = '5.0.0-SNAPSHOT'
+//def groovyVersion = '5.0.0-beta-1'
+def groovyVersion = '6.0.0-RC-3'
 
 repositories {
+    mavenLocal { content { includeGroup 'org.apache.groovy' } }
+    maven { url = 'https://repository.apache.org/content/repositories/orgapachegroovy-1123' } // RC-3 staging
     mavenCentral()
     maven{url = 'https://repository.apache.org/content/repositories/snapshots/' }
 }
@@ -34,11 +37,14 @@ dependencies {
     implementation "org.apache.groovy:groovy:$groovyVersion"
     implementation "org.apache.groovy:groovy-macro:$groovyVersion"
     implementation "org.apache.groovy:groovy-ginq:$groovyVersion"
+    implementation "org.apache.groovy:groovy-nio:$groovyVersion"
     implementation 'com.ginsberg:gatherers4j:0.11.0'
-    implementation 'com.bloidonia:groovy-stream:0.9.1'
+    implementation('com.bloidonia:groovy-stream:0.9.1') {
+        exclude group: 'org.codehaus.groovy' // built against Groovy 2.3; Groovy 6 supplies the runtime
+    }
 }
 
-def jdkVersion = providers.gradleProperty('jdkVersion').getOrElse('24')
+def jdkVersion = providers.gradleProperty('jdkVersion').getOrElse('25')
 
 def runall = tasks.register('runAll') {
     group = 'Application'
@@ -55,7 +61,7 @@ FileUtil.baseNames(sourceSets.main.allSource.files).each { name ->
             languageVersion = JavaLanguageVersion.of(jdkVersion)
         }
     }
-    if (!name.contains('Gatherer') || jdkVersion == '24') {
+    if (!name.contains('Gatherer') || (jdkVersion as int) >= 24) {
         runall.configure {
             dependsOn subtask
         }
@@ -71,7 +77,7 @@ java {
 sourceSets {
     main {
         groovy {
-            if (jdkVersion != '24') {
+            if ((jdkVersion as int) < 24) {
                 exclude '**/*Gatherer.groovy'
             }
         }
@@ -80,4 +86,10 @@ sourceSets {
 
 tasks.named('rat') {
     excludes = ['**/build/**', '.idea', 'gradle/wrapper', '**/.gradle']
+}
+
+// native-build.sh: the runtime jars beside the compiled scripts
+tasks.register('copyDependenciesToLib', Sync) {
+    into layout.buildDirectory.dir('lib')
+    from configurations.runtimeClasspath
 }

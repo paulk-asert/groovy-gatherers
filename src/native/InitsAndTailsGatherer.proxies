@@ -1,0 +1,11 @@
+# interfaces closures are coerced to at dynamic call sites (proxy entries the agent cannot record):
+# Gatherer.ofSequential/of take a Supplier, an Integrator (or Greedy), a BinaryOperator and a BiConsumer
+java.util.function.Supplier
+java.util.function.BiConsumer
+java.util.function.BiFunction
+java.util.function.BinaryOperator
+java.util.function.Function
+java.util.function.Predicate
+java.util.function.Consumer
+java.util.stream.Gatherer$Integrator
+java.util.stream.Gatherer$Integrator$Greedy

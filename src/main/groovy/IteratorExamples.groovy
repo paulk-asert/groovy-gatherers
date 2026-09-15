@@ -1,3 +1,7 @@
+import groovy.io.FileType
+
+import java.nio.file.Path
+
 /*
  * SPDX-License-Identifier: Apache-2.0
  *

@@ -1,0 +1,2 @@
+# interfaces closures are coerced to at dynamic call sites (proxy entries the agent cannot record)
+java.util.function.BinaryOperator
